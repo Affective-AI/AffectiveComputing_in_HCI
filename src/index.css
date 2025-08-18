@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* 直接用原生 CSS 写背景，避免 theme() 解析问题 */
+body {
+  background-color: #f8fafc; /* slate-50 */
+  color: #0f172a;            /* slate-900 */
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.12), transparent),
+    radial-gradient(900px 400px at 110% 10%, rgba(139,92,246,.10), transparent),
+    radial-gradient(circle at 1px 1px, rgba(99,102,241,.08) 1px, transparent 0);
+  background-size: auto, auto, 22px 22px;
+  background-repeat: no-repeat, no-repeat, repeat;
+}
+
+/* 可选：仅保留原生滚动条美化 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background-color: rgb(203 213 225); border-radius: 8px; }
