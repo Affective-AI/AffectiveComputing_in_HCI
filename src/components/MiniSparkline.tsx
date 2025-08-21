@@ -1,12 +1,37 @@
-export default function MiniSparkline({data, height=28}:{data:number[]; height?:number}) {
-  const max = Math.max(...data, 10), min = Math.min(...data, 0)
-  const bars = data.slice(-12)
+// src/components/MiniSparkline.tsx
+import React from "react"
+
+type Point = { ts: number; value: number }
+
+export default function MiniSparkline({ points, height = 80 }: { points: Point[]; height?: number }) {
+  if (!points || points.length === 0) return <div className="text-sm text-slate-500">暂无数据</div>
+
+  const w = Math.max(200, points.length * 30) // 自适应宽度
+  const xs = points.map((p, i) => (i / (points.length - 1 || 1)) * (w - 8) + 4)
+  const ys = (() => {
+    const vs = points.map((p) => p.value)
+    const min = Math.min(...vs)
+    const max = Math.max(...vs)
+    const scale = (v: number) => {
+      if (max === min) return height / 2
+      // 数值大在上方，0-10 → 上下内边距 6px
+      const t = (v - min) / (max - min)
+      return (height - 12) * (1 - t) + 6
+    }
+    return points.map((p) => scale(p.value))
+  })()
+
+  const path = points.map((_, i) => `${i === 0 ? "M" : "L"} ${xs[i].toFixed(1)} ${ys[i].toFixed(1)}`).join(" ")
+
   return (
-    <div className="flex items-end gap-1" style={{height}}>
-      {bars.map((v,i)=>{
-        const h = ((v-min)/(max-min+0.0001))*(height-6)+6
-        return <div key={i} className="w-2 flex-none rounded bg-gradient-to-t from-brand-300 to-brand-500/70" style={{height:h}}/>
-      })}
+    <div className="overflow-x-auto">
+      <svg width={w} height={height}>
+        <rect x={0} y={0} width={w} height={height} fill="white" />
+        <path d={path} fill="none" stroke="currentColor" strokeWidth="2" />
+        {points.map((_, i) => (
+          <circle key={i} cx={xs[i]} cy={ys[i]} r={3} fill="currentColor" />
+        ))}
+      </svg>
     </div>
   )
 }
